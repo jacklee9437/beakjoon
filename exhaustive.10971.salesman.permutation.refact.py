@@ -13,38 +13,24 @@ input = stdin.readline
  => w[i][j] 로 구하되, 해당 값이 0인 경우는 예외처리 필요. 
  => sum에 계속 더한다음에 pay list에 추가하는 방법 or W[i][j]를 다른 리스트에 넣었다가 한번에 합 구하는 방법
  모든 순열에 대해 확인한 후 pay list의 최소값 출력
+-> 시간초과,,, 중간에 최소값보다 커지면 바로 중단하고 나올 수 있도록 처리해야할듯
+-> 오류발견. 출발지는 중요하지 않다! 왜냐면, 0 1 2 3 4 0 으로 돌아오나, 1 2 3 4 0 1 로 돌아오나 w[0][1] + w[1][2] + w[2][3] + w[3][4] + w[4][0] 인건 똑같음!
+
 
 - 재귀
 v를 1씩 올려가면서 v번째 방문
 w[i][j] 구하려면 이전에 방문한 위치 필요 => 
-방문했던 위치인지 확인 필요 => is_visited 비트 맵
+방문했던 위치인지 확인 필요 => is_visited 비트 마스크
 w[i][j]가 0인지 확인 필요
 방문 가능한 위치이면 해당 w[i][j] 값을 global sum에 추가
 v가 n에 도착하면 재귀 종결 - sum을 pay list에 추가, sum은 0으로 초기화
 -> 답은 나오지만 시간초과
+-> 출발지 고정하면 좋을듯!
 '''
 
 
 # 필요한 함수
-def salesman(v = any, prev = None) :
-    global sum, pay_list
-    if v == 0 :
-        for i in range(n) :
-            is_visited[i] = 1
-            salesman(v+1, i)
-            is_visited[i] = 0
-    elif v == n :
-        sum += w[prev][is_visited.index(1)]
-        pay_list.append(sum)
-        sum -= w[prev][is_visited.index(1)]
-    else :
-        for i in range(n) :
-            if (is_visited[i] > 0 or w[prev][i] == 0) : continue
-            sum += w[prev][i]
-            is_visited[i] = v + 1
-            salesman(v+1, i)
-            sum -= w[prev][i]
-            is_visited[i] = 0
+# def 
 
 
 if __name__ == "__main__":
@@ -57,13 +43,25 @@ if __name__ == "__main__":
     # start = time.time()
 
     # 문제 풀이
-    is_visited = [0] * n
-    pay_list = []
-    sum = 0
+    routes = map(list,permutations(range(1,n)))
+    cost_list = []
 
-    salesman(0)
+    for route in routes :
+        sum = 0
+        is_break = False
+        route.append(0)
+        route.insert(0,0)
+        for v in range(n) :
+            cost = w[route[v]][route[v+1]]
+            if cost == 0 : 
+                is_break = True
+                break
+            sum += cost
+        if is_break : continue
+        cost_list.append(sum)
+    
+    print(min(cost_list))
 
-    print(min(pay_list))
 
     
     
