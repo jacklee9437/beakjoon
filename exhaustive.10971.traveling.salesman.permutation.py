@@ -1,0 +1,66 @@
+from itertools import permutations
+import time
+from sys import stdin
+input = stdin.readline
+
+'''
+-------- Concept --------
+재귀적으로? for 문으로? 순열로? 방문하는 순서 만들기
+
+- 순열 
+순열로 0~n-1까지 가능한 수열 만들기
+순서대로 방문하는 비용의 합 구하기 [-1] ~ [-1] 까지
+ => w[i][j] 로 구하되, 해당 값이 0인 경우는 예외처리 필요. 
+ => sum에 계속 더한다음에 pay list에 추가하는 방법 or W[i][j]를 다른 리스트에 넣었다가 한번에 합 구하는 방법
+ 모든 순열에 대해 확인한 후 pay list의 최소값 출력
+
+- 재귀
+v를 1씩 올려가면서 v번째 방문
+w[i][j] 구하려면 이전에 방문한 위치 필요 => 
+방문했던 위치인지 확인 필요 => is_visited 비트 맵
+w[i][j]가 0인지 확인 필요
+방문 가능한 위치이면 해당 w[i][j] 값을 global sum에 추가
+v가 n에 도착하면 재귀 종결 - sum을 pay list에 추가, sum은 0으로 초기화
+-> 답은 나오지만 시간초과
+'''
+
+
+# 필요한 함수
+# def 
+
+
+if __name__ == "__main__":
+
+    # 입력
+    n = int(input())
+    w = [list(map(int,input().split())) for _ in range(n)]
+
+    # 풀이시작전 기록
+    # start = time.time()
+
+    # 문제 풀이
+    routes = map(list,permutations(range(n)))
+    cost_list = []
+
+    for route in routes :
+        sum = 0
+        is_break = False
+        route.append(route[0])
+        for v in range(n) :
+            cost = w[route[v]][route[v+1]]
+            if cost == 0 : 
+                is_break = True
+                break
+            sum += cost
+        if is_break : continue
+        cost_list.append(sum)
+    
+    print(min(cost_list))
+
+
+    
+    
+
+    # 풀이 완료 기록 및 출력
+    # end = time.time()
+    # print(f"소요시간 : {(end - start)*1000:.5f} ms")
