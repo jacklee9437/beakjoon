@@ -15,12 +15,14 @@ lr_circles.sort(key= lambda x: x[0])
 # print(lr_circles)
 
 stk = deque()
-# contacts = set()
+contacts = set()
+
+e = 0
 
 for circle in lr_circles :
     if not stk :
         stk.append(circle)
-        # print(circle, stk)
+        print(circle, stk, e, contacts)
         continue
 
     if stk[-1][0] == circle[0] :
@@ -61,9 +63,12 @@ while stk :
             e += 1
 
     
+print(temp, stk, e, contacts)
 
-
-print(ans)
+v = len(contacts)
+f = 2-v+e
+# print(v,e,f)
+print(f)
 
 
 
@@ -87,6 +92,24 @@ print(ans)
 - 하나의 원에 대해 접하는 원이 있는지, 몇개있는지
 
 
+실패원인
+1. 시간초과
+2. 오일러지표가... 왜...
+
+반례 :
+5
+2 2
+1 1
+3 1
+8 3
+12 1
+
+오일러지표를 정확히 이해하지 못한 부분,,
+https://velog.io/@phw1996/Python-%EB%B0%B1%EC%A4%80-10000%EB%B2%88-%EC%9B%90-%EC%98%81%EC%97%AD-%ED%92%80%EC%9D%B4
+
+오일러지표를 사용해서 문제 풀려면 v,e도 예외적으로 다르게 생각해주어야하고,
+v-e+f=2로 상수가 고정적인게 아니라 컴포넌트 c 값을 구해야하므로 유니온 파인드 알고리즘 이란걸 적용해야함.
+나중에 추가로 공부하기로 하고 이번엔 패스...
 -----
 
 
