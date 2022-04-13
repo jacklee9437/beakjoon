@@ -3,67 +3,64 @@ from sys import maxsize, stdin
 input = stdin.readline
 
 N = int(input())
-circles = [tuple(map(int,input().split())) for _ in range(N)]
+circlesCR = [tuple(map(int,input().split())) for _ in range(N)]
+circlesLR = []
 
-lr_circles = []
-for circle in circles :
-    l = circle[0] - circle[1]
-    r = circle[0] + circle[1]
-    lr_circles.append((l,r))
-lr_circles.sort(reverse=True, key= lambda x: x[1])
-lr_circles.sort(key= lambda x: x[0])
-# print(lr_circles)
+for C, R in circlesCR :
+    xL = C - R
+    xR = C + R
+    circlesLR.append((xL,xR))
+
+circlesLR.sort(reverse=True, key= lambda x:x[1])
+circlesLR.sort(key = lambda x:x[0])
 
 stk = deque()
-# contacts = set()
+areaCnt = 1
 
-for circle in lr_circles :
-    if not stk :
-        stk.append(circle)
-        # print(circle, stk)
-        continue
-
-    if stk[-1][0] == circle[0] :
-        contacts.add(circle[0])
-        stk.append(circle)
-    elif stk[-1][0] < circle[0] < stk[-1][1] :
-        stk.append(circle)
-    elif circle[1] == stk[-1][1] :
-        contacts.add(circle[1])
-        stk.append(circle)
-    else :
-        if stk[-1][1] == circle[0] :
-            contacts.add(circle[0])
-        while stk and stk[-1][1] <= circle[0] :
+for circle in circlesLR :
+    if stk and stk[-1]["x"][1] <= circle[0] :
+        temp = 0
+        while stk and stk[-1]["x"][1] <= circle[0] :
+            # print(stk, areaCnt)
             temp = stk.pop()
-            if stk and temp[1] == stk[-1][1] :
-                contacts.add(temp[1])
-            if temp[0] in contacts and temp[1] in contacts :
-                e += 2
-            else :
-                e += 1
-        stk.append(circle)
-    print(circle, stk, e, contacts)
+            if temp["is-linked"] :
+                if stk and stk[-1]["x"][1] == temp["x"][1] :
+                    stk[-1]["is-devided"] = True
+            areaCnt += 2 if temp["is-devided"] else 1
+        stk.append({"x":circle, "is-devided":False, "is-linked":True if temp["x"][1] == circle[0] else False})
+    else :
+        stk.append({"x":circle, "is-devided":False, "is-linked":True if stk and stk[-1]["x"][0] == circle[0] else False})
 
 while stk :
+    # print(stk, areaCnt)
     temp = stk.pop()
-    if stk and temp[0] < stk[-1][1] :
-        if temp[1] == stk[-1][1] :
-            contacts.add(temp[1])
-        if temp[0] in contacts and temp[1] in contacts :
-            e += 2
-        else :
-            e += 1
-    else : 
-        if temp[0] in contacts and temp[1] in contacts :
-            e += 2
-        else :
-            e += 1
+    if temp["is-linked"] :
+        if stk and stk[-1]["x"][1] == temp["x"][1] :
+            stk[-1]["is-devided"] = True
+    areaCnt += 2 if temp["is-devided"] else 1
 
-    
+print(areaCnt)
 
 
-print(ans)
+'''
+큰원을 열고
+- 다음원을 보는데 일단 큰 원 안에 있는지 확인
+-- 밖에 있으면 이전 원 닫는데, 내부 연결되어있었는지 확인 (스택에 넣을때 전달해서 넣기)
+-- 안에 있으면 왼쪽에 닿는지 확인
+--- 왼쪽에 닿으면 이전 원에 대해서 연결되어있었다고 체크하고 다음원 확인
+--- 안닿으면 스택에 넣고 다음 원 확인
+-- ...
+- 스택이 얼마나 쌓였냐가 원을 얼마나 열었냐의 의미가 됨.
+
+
+
+답은 잘 나오는데 백준에서 틀렸다고 나옴.
+반례 찾기 여려움.
+
+일단 기본 개념이, 괄호와 같이 일단 넣고 닫힐때 계산을 하는 방식이기 때문에 개념은 맞음.
+
+'''
+
 
 
 
