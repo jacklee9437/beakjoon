@@ -1,78 +1,50 @@
-from sys import stdin
+from collections import deque
+from sys import stdin, maxsize
 input = stdin.readline
 
-N = int(input())
+R, C = map(int,input().split())
+Map = [list(input().rstrip()) for i in range(R)]
 
-def S(k) :
-    if k == 0 :
-        return "m o o"    
-    return S(k-1) + " m" + " o" * (k+2) + " " + S(k-1) 
+exodus = [[maxsize] * C for _ in range(R)]
+dr = [-1, 0, 1, 0]
+dc = [0, 1,  0, -1]
 
+que = deque()
+for i in range(R) :
+    for j in range(C) :
+        if Map[i][j] == "S" :
+            que.append(("Gosmi",(i,j)))
+            exodus[i][j] = 0
+        elif Map[i][j] == "*" :
+            que.appendleft(("Wave",(i,j)))
+            exodus[i][j] = -1
+        elif Map[i][j] == "X" :
+            exodus[i][j] = -1
 
+while que :
+    obj, rc = que.popleft()
+    for i in range(4) :
+        nr = rc[0] + dr[i]
+        nc = rc[1] + dc[i]
+        if 0 <= nr < R and 0 <= nc < C :
+            if obj == "Gosmi" :
+                if Map[nr][nc] == "*" or exodus[nr][nc] < exodus[rc[0]][rc[1]]:
+                    continue
+                else :
+                    if Map[nr][nc] == "D" :
+                        print(exodus[rc[0]][rc[1]]+1)
+                        exit()
+                    exodus[nr][nc] = exodus[rc[0]][rc[1]] + 1
+                    que.append((obj, (nr,nc)))
+            else :
+                if Map[nr][nc] == "*" or Map[nr][nc] == "X" or Map[nr][nc] == "D" :
+                    continue
+                else :
+                    Map[nr][nc] = "*"
+                    que.append((obj, (nr,nc)))
+else :
+    print("KAKTUS")
 
-'''
-큰원을 열고
-- 다음원을 보는데 일단 큰 원 안에 있는지 확인
--- 밖에 있으면 이전 원 닫는데, 내부 연결되어있었는지 확인 (스택에 넣을때 전달해서 넣기)
--- 안에 있으면 왼쪽에 닿는지 확인
---- 왼쪽에 닿으면 이전 원에 대해서 연결되어있었다고 체크하고 다음원 확인
---- 안닿으면 스택에 넣고 다음 원 확인
--- ...
-- 스택이 얼마나 쌓였냐가 원을 얼마나 열었냐의 의미가 됨.
-
-'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-🤔🤔🤔 문제정의를 잘 하자 🤔🤔🤔
-
-입력 : 
-출력 : 
-
-찾아야하는 값 : 
-알고리즘 : 
-
------
-
-
-
------
-
-
-'''
+# for i in range(R) :
+#     print(Map[i])
+#     print(exodus[i])
