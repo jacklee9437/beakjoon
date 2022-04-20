@@ -1,37 +1,43 @@
 from collections import deque
-import heapq
-from sys import stdin
+from sys import stdin, maxsize
 input = stdin.readline
 
 N = int(input())
-Matrix = [list(map(int,input().rstrip())) for _ in range(N)]
+M = int(input())
 graph = [[] for _ in range(N+1)]
-degree = [0] * (N+1)
-for i in range(N) :
-    for j in range(N) :
-        if Matrix[i][j] == 1 :
-            graph[j+1].append(i+1)
-            degree[i+1] += 1
+back_graph = [[] for _ in range(N+1)]
+indegree = [0] * (N+1)
+for _ in range(M) :
+    S, E, T = map(int,input().split())
+    graph[S].append((E,T))
+    back_graph[E].append((S,T))
+    indegree[E] += 1 
+Lv, Arv = map(int,input().split())
 
-que = []
+times = [0] * (N+1)
 
-for i in range(1,N+1) :
-    if degree[i] == 0 :
-        heapq.heappush(que,-i)
+que = deque()
+que.append(Lv)
 
-num = N
-rst = [0] * (N+1)
 while que :
-    v = -heapq.heappop(que)
-    rst[v] = num
-    num -= 1
-    for i in graph[v] :
-        degree[i] -= 1
-        if degree[i] == 0 :
-            heapq.heappush(que,-i)
+    s = que.popleft()
+    for e, t in graph[s] :
+        times[e] = max(times[e], times[s] + t)
+        indegree[e] -= 1
+        if indegree[e] == 0 :
+            que.append(e)
 
-if 0 in rst[1:] :
-    print(-1)
-else :
-    print(' '.join(map(str,rst[1:])))
+cnt = 0
+visit = [False] * (N+1)
+que.append(Arv)
+while que :
+    e = que.popleft()
+    for s, t in back_graph[e] :
+        if times[e] - times[s] == t :
+            cnt += 1
+            if not visit[s] :
+                visit[s] = True
+                que.append(s)
 
+print(times[Arv])
+print(cnt)
