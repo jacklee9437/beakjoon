@@ -3,29 +3,23 @@ from sys import stdin, maxsize
 input = stdin.readline
 
 N, K = map(int,input().split())
-coins = [int(input()) for i in range(N)]
+coins = [int(input()) for _ in range(N)]
 
 que = deque()
-chk = [False] * (K+1)
+visit = [False] * (K+1)
 
-for coin in coins :
-    if coin <= K :
-        que.append([coin,1])
-        chk[coin] = True
+que.append((0,0))
 
 while que :
-    val, cnt = que.popleft()
-    if val == K :
+    k, cnt = que.popleft()
+    if k == K :
         print(cnt)
-        break
+        exit()
     for coin in coins :
-        rst = val + coin
-        Cnt = cnt + 1
-        if rst > K :
-            continue
-        if not chk[rst] :
-            que.append([rst,Cnt])
-            chk[rst] = True
+        tempK = k + coin
+        if tempK > K : continue
+        if not visit[tempK] :
+            visit[tempK] = True
+            que.append((tempK,cnt+1))
 else :
     print(-1)
-
